@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Index
+{% endblock %}
+
+{% block main %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Symbol</th>
+                <th>Name</th>
+                <th>Shares</th>
+                <th>Price</th>
+                <th>TOTAL</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <td colspan="4"><b>Grand Total</b></td>
+                <td><b>{{grandtotal}}</b></td>
+            </tr>
+        </tfoot>
+        <tbody>
+            {% for stock in stocks %}
+                <tr>
+                    <td>{{stock["symbol"]}}</td>
+                    <td>{{stock["name"]}}</td>
+                    <td>{{stock["shares"]}}</td>
+                    <td>${{stock["price"]}}</td>
+                    <td>${{stock["total"]}}</td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="4">Cash</td>
+                <td>{{usd (cash[0]["cash"])}}</td>
+            </tr>
+        </tbody>
+    </table>
+
+     <p class="special-psswd">Change Password</p>
+
+    <form action="/index" method="post">
+        <div class="form-group" text-align="left">
+            <input class="form-control" name="password_1" placeholder="New Password" type="password"/>
+        </div>
+        <div class="form-group">
+            <input class="form-control" name="password_2" placeholder="Confirm New Password" type="password"/>
+        </div>
+        <button class="btn btn-primary" type="submit">Update password</button>
+
+{% endblock %}
