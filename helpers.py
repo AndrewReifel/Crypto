@@ -1,6 +1,7 @@
 import csv
 import urllib.request
-
+import json
+import requests
 from flask import redirect, render_template, request, session
 from functools import wraps
 
@@ -75,32 +76,24 @@ def lookup(symbol):
     except:
         pass
 
-    # Query Alpha Vantage for quote instead
     # https://www.alphavantage.co/documentation/
     try:
 
         # GET CSV
-        url = f"https://www.alphavantage.co/query?apikey=NAJXWIA8D6VN6A3K&datatype=csv&function=TIME_SERIES_INTRADAY&interval=1min&symbol={symbol}"
-        webpage = urllib.request.urlopen(url)
+        # Need to hide API key
 
-        # Parse CSV
-        datareader = csv.reader(webpage.read().decode("utf-8").splitlines())
-
-        # Ignore first row
-        next(datareader)
-
-        # Parse second row
-        row = next(datareader)
-
+        r = requests.get("https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency={}&to_currency=USD&apikey=Z5J3A8PFFVDAFHOQ".format(symbol)).json()
+        name = (r['Realtime Currency Exchange Rate']['2. From_Currency Name'])
         # Ensure stock exists
         try:
-            price = float(row[4])
+            price = float(r['Realtime Currency Exchange Rate']['5. Exchange Rate'])
+
         except:
             return None
 
         # Return stock's name (as a str), price (as a float), and (uppercased) symbol (as a str)
         return {
-            "name": symbol.upper(),  # for backward compatibility with Yahoo
+            "name": name,  # for backward compatibility with Yahoo
             "price": price,
             "symbol": symbol.upper()
         }

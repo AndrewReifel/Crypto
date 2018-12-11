@@ -11,9 +11,6 @@ from helpers import apology, login_required, lookup, usd
 app = Flask(__name__)
 
 # Ensure responses aren't cached
-
-
-
 @app.after_request
 def after_request(response):
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
@@ -38,7 +35,7 @@ db = SQL("sqlite:///finance.db")
 @app.route("/")
 @login_required
 def index():
-    """Show portfolio of stocks"""
+    """Show portfolio of coins"""
 
     if request.method == "GET":
         # get cash info from users database
@@ -50,7 +47,6 @@ def index():
         stocks = db.execute("SELECT symbol, shares FROM portfolio WHERE id = :id", id=session["user_id"])
 
         # for every stock in the user proftfolio, assign dict key for use in html/jinja
-
         for stock in stocks:
             symbol = str(stock["symbol"])
             shares = int(stock["shares"])
