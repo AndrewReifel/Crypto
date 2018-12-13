@@ -5,20 +5,23 @@
 {% endblock %}
 
 {% block main %}
-    <table class="table table-striped">
+    <table class="table table-striped" style="width:100%">
         <thead>
             <tr>
                 <th>Symbol</th>
                 <th>Name</th>
                 <th>Shares</th>
                 <th>Price</th>
-                <th>TOTAL</th>
+                <th>Total</th>
             </tr>
         </thead>
         <tfoot>
             <tr>
-                <td colspan="4"><b>Grand Total</b></td>
-                <td><b>{{grandtotal}}</b></td>
+                <td colspan="0"><b>Grand Total</b></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><b>{{usd (grandtotal)}}</b></td>
             </tr>
         </tfoot>
         <tbody>
@@ -27,12 +30,15 @@
                     <td>{{stock["symbol"]}}</td>
                     <td>{{stock["name"]}}</td>
                     <td>{{stock["shares"]}}</td>
-                    <td>${{stock["price"]}}</td>
-                    <td>${{stock["total"]}}</td>
+                    <td>{{usd (stock["price"])}}</td>
+                    <td>{{usd (stock["total"])}}</td>
                 </tr>
             {% endfor %}
             <tr>
-                <td colspan="4">Cash</td>
+                <td colspan="0">Cash</td>
+                <td></td>
+                <td></td>
+                <td></td>
                 <td>{{usd (cash[0]["cash"])}}</td>
             </tr>
         </tbody>

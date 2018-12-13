@@ -55,13 +55,15 @@ def index():
             total = ""
             quote = lookup(symbol)
             stock["name"] = quote["name"]
-            stock["price"] = "{:.2f}".format(quote["price"])
-            stock["total"] = "{:.2f}".format(quote["price"] * shares)
+            stock["price"] = quote["price"]
+            stock["total"] = quote["price"] * shares
+
             stock["grandtotal"] = quote["price"] * shares
             grandtotal += stock["grandtotal"]
 
-        # format grandtotal to force 2 decimal spots
-        grandtotal = "{:.2f}".format(grandtotal)
+        # format grandtotal to force 2 decimal spots and $ on index.html using jinja
+
+        grandtotal = (grandtotal)
 
         # render index page with some given values
         return render_template("index.html", stocks=stocks, cash=cash, grandtotal=grandtotal)
@@ -192,6 +194,24 @@ def logout():
 
     # Redirect user to login form
     return redirect("/")
+
+
+@app.route("/leaderboard", methods=["GET", "POST"])
+@login_required
+def leaderboard():
+
+    """show leaderboard"""
+
+    return render_template("leaderboard.html")
+
+
+@app.route("/moonlanding", methods=["GET", "POST"])
+@login_required
+def moonlanding():
+    """show fun text"""
+
+    return render_template("moonlanding.html")
+
 
 
 @app.route("/quote", methods=["GET", "POST"])

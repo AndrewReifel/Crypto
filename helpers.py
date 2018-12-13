@@ -48,6 +48,7 @@ def lookup(symbol):
 
     # Query Yahoo for quote
     # http://stackoverflow.com/a/21351911
+    # even though YAHOO DOESNT WORK. remove this try
     try:
 
         # GET CSV
