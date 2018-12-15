@@ -5,6 +5,26 @@
 {% endblock %}
 
 {% block main %}
-    <body><b>Build Leaderboard HERE!</b></body>
+    <table class="table table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th>Player</th>
+                <th>Grand Total</th>
+                <th>Rank</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{user["username"]}}</td>
+                    <td>cash here</td>
+                    <td>how do i rank?</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
 
 {% endblock %}

@@ -199,10 +199,16 @@ def logout():
 @app.route("/leaderboard", methods=["GET", "POST"])
 @login_required
 def leaderboard():
-
     """show leaderboard"""
 
-    return render_template("leaderboard.html")
+    users = db.execute("SELECT username FROM users")
+
+    for user in users:
+        username = ""
+        #cash = user["cash"]
+
+    # else:
+    return render_template("leaderboard.html", users=users)
 
 
 @app.route("/moonlanding", methods=["GET", "POST"])
@@ -217,7 +223,7 @@ def moonlanding():
 @app.route("/quote", methods=["GET", "POST"])
 @login_required
 def quote():
-    """Get stock quote."""
+    """Get stock quote"""
 
     # if user routed via GET, return the quote page
     if request.method == "GET":
