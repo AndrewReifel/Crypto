@@ -37,47 +37,36 @@ db = SQL("sqlite:///finance.db")
 def index():
     """Show portfolio of coins"""
 
-    if request.method == "GET":
-        # get cash info from users database
-        cash = db.execute("SELECT cash FROM users WHERE id = :id", id=session["user_id"])
+    # get cash info from users database
+    cash = db.execute("SELECT cash FROM users WHERE id = :id", id=session["user_id"])
 
-        grandtotal = cash[0]["cash"]
+    grandtotal = cash[0]["cash"]
 
-        # obtain stock info from portoflio database
-        stocks = db.execute("SELECT symbol, shares FROM portfolio WHERE id = :id", id=session["user_id"])
+    # obtain stock info from portoflio database
+    stocks = db.execute("SELECT symbol, shares FROM portfolio WHERE id = :id", id=session["user_id"])
 
-        # for every stock in the user proftfolio, assign dict key for use in html/jinja
-        for stock in stocks:
-            symbol = str(stock["symbol"])
-            shares = int(stock["shares"])
-            name = ""
-            price = ""
-            total = ""
-            quote = lookup(symbol)
-            stock["name"] = quote["name"]
-            stock["price"] = quote["price"]
-            stock["total"] = quote["price"] * shares
+    # for every stock in the user proftfolio, assign dict key for use in html/jinja
+    for stock in stocks:
+        symbol = str(stock["symbol"])
+        shares = int(stock["shares"])
+        name = ""
+        price = ""
+        total = ""
+        quote = lookup(symbol)
+        stock["name"] = quote["name"]
+        stock["price"] = quote["price"]
+        stock["total"] = quote["price"] * shares
 
-            stock["grandtotal"] = quote["price"] * shares
-            grandtotal += stock["grandtotal"]
+        stock["grandtotal"] = quote["price"] * shares
+        grandtotal += stock["grandtotal"]
 
-        # format grandtotal to force 2 decimal spots and $ on index.html using jinja
+    # format grandtotal to force 2 decimal spots and $ on index.html using jinja
+    grandtotal = (grandtotal)
 
-        grandtotal = (grandtotal)
+    # render index page with some given values
+    return render_template("index.html", stocks=stocks, cash=cash, grandtotal=grandtotal)
 
-        # render index page with some given values
-        return render_template("index.html", stocks=stocks, cash=cash, grandtotal=grandtotal)
 
-    # Change password
-    else:
-        if not request.form.get("password_1") or request.form.get("password_2"):
-            return apology("must provide passwords", 403)
-        elif request.form.get("password_1") != request.form.get("password_2"):
-            return apology("passwords are not the same", 403)
-        else:
-            hash = generate_password_hash(request.form.get("password_1"))
-            rows = db.execute("UPDATE users SET hash=:new_hash WHERE id=:id", new_hash=hash, id=session["user_id"])
-            return render_template("/changepassword.html")
 
 
 @app.route("/buy", methods=["GET", "POST"])
@@ -115,12 +104,15 @@ def buy():
         # if sufficent cash available, update users, portfolio, and histroy with the new information
         else:
             db.execute("UPDATE users SET cash = cash - :cost WHERE id = :id", cost=cost, id=session["user_id"])
-            db.execute("UPDATE portfolio SET shares = shares + :shares WHERE id = :id AND symbol = :symbol",
-                       id=session["user_id"], symbol=quote["symbol"], shares=shares)
-            db.execute("INSERT OR IGNORE INTO portfolio (id,symbol,shares) VALUES (:id,:symbol,:shares)",
-                       id=session["user_id"], symbol=quote["symbol"], shares=shares)
-            db.execute("INSERT INTO history (id,symbol,shares,price,date) VALUES (:id,:symbol,:shares,:price,datetime('now'))",
-                       id=session["user_id"], symbol=quote["symbol"], shares=shares, price=price)
+
+            # db.execute("UPDATE portfolio SET shares = shares + :shares WHERE id = :id AND symbol = :symbol",
+            #           id=session["user_id"], symbol=quote["symbol"], shares=shares)
+
+            db.execute("INSERT OR IGNORE INTO portfolio (id,symbol,shares,name,price) VALUES (:id,:symbol,:shares,:name,:price)",
+                       id=session["user_id"], symbol=quote["symbol"], shares=shares, name=quote["name"], price=quote["price"])
+
+            db.execute("INSERT INTO history (id,symbol,shares,price,date,name) VALUES (:id,:symbol,:shares,:price,datetime('now'),:name)",
+                       id=session["user_id"], symbol=quote["symbol"], shares=shares, price=price, name=quote["name"])
 
         flash('Bought!')
         return redirect(url_for("index"))
@@ -136,12 +128,13 @@ def history():
     """Show history of transactions"""
 
     # obtain stock info from portfolio database
-    history = db.execute("SELECT symbol, shares, price, date FROM history WHERE id = :id ORDER BY date DESC", id=session["user_id"])
+    history = db.execute("SELECT symbol, shares, price, date, name FROM history WHERE id = :id ORDER BY date DESC", id=session["user_id"])
 
     # for every stock in the user's portfolio, assign dict key/values for use in html/jinja
     for transaction in history:
         symbol = transaction["symbol"]
         shares = transaction["shares"]
+        name = transaction["name"]
         price = transaction["price"]
         date = transaction["date"]
 
@@ -208,17 +201,26 @@ def leaderboard():
         username = ""
         cash = user["cash"]
 
-
-    # else:
     return render_template("leaderboard.html", users=users)
 
-
-@app.route("/moonlanding", methods=["GET", "POST"])
+@app.route("/settings", methods=["GET", "POST"])
 @login_required
-def moonlanding():
-    """show fun text"""
+def settings():
+    """display settings"""
 
-    return render_template("moonlanding.html")
+    if request.method == "POST":
+
+        if not request.form.get("password_1") or request.form.get("password_2"):
+            return apology("must provide passwords", 403)
+        elif request.form.get("password_1") != request.form.get("password_2"):
+            return apology("passwords are not the same", 403)
+        else:
+            hash = generate_password_hash(request.form.get("password_1"))
+            rows = db.execute("UPDATE users SET hash=:new_hash WHERE id=:id", new_hash=hash, id=session["user_id"])
+            return render_template("/changepassword.html")
+
+    else:
+        return render_template("settings.html")
 
 
 

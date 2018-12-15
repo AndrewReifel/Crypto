@@ -7,8 +7,20 @@
 {% block main %}
 <!--
 create settings page and move password change here
-
 -->
+
+    <!--commented out for password change. need to move this to new page-->
+
+     <p class="special-psswd">Change Password</p>
+
+    <form action="/settings" method="post">
+        <div class="form-group" text-align="left">
+            <input class="form-control" name="password_1" placeholder="New Password" type="password"/>
+        </div>
+        <div class="form-group">
+            <input class="form-control" name="password_2" placeholder="Confirm New Password" type="password"/>
+        </div>
+        <button class="btn btn-primary" type="submit">Update password</button>
 
 
 

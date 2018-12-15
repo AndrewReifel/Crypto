@@ -9,6 +9,7 @@
         <thead>
             <tr>
                 <th>Symbol</th>
+                <th>Name</th>
                 <th>Shares</th>
                 <th>Price</th>
                 <th>Transacted</th>
@@ -19,6 +20,7 @@
             {% for transaction in history %}
                 <tr>
                     <td>{{transaction["symbol"]}}</td>
+                    <td>{{transaction["name"]}}</td>
                     <td>{{transaction["shares"]}}</td>
                     <td>${{transaction["price"]}}</td>
                     <td>{{transaction["date"]}}</td>
