@@ -18,7 +18,7 @@
             {% for user in users %}
                 <tr>
                     <td>{{user["username"]}}</td>
-                    <td>cash here</td>
+                    <td>{{usd (user["cash"])}}</td>
                     <td>how do i rank?</td>
                 </tr>
             {% endfor %}

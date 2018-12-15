@@ -201,11 +201,13 @@ def logout():
 def leaderboard():
     """show leaderboard"""
 
-    users = db.execute("SELECT username FROM users")
+    # retrive usernames and cash (need total but this works for now) from user table and find way to rank
+    users = db.execute("SELECT username, cash FROM users")
 
     for user in users:
         username = ""
-        #cash = user["cash"]
+        cash = user["cash"]
+
 
     # else:
     return render_template("leaderboard.html", users=users)
